@@ -61,7 +61,7 @@ export async function generarConstanciaPDF(
   // Calcular posición centrada
   const textWidth = font.widthOfTextAtSize(nombre, fontSize)
   const xPos = (pageWidth - textWidth) / 2
-  const yPos = pageHeight * (1 - (curso.nombre_posicion_y || 55) / 100)
+  const yPos = pageHeight * (1 - (curso.nombre_posicion_y || 58) / 100)
 
   // Dibujar nombre
   page.drawText(nombre, {
