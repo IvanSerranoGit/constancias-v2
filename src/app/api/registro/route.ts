@@ -51,7 +51,8 @@ export async function POST(request: NextRequest) {
   })
 
   if (insertError) {
-    return NextResponse.json({ error: 'Error al registrar participante' }, { status: 500 })
+    console.error('Error al insertar participante:', insertError)
+    return NextResponse.json({ error: `Error al registrar: ${insertError.message}` }, { status: 500 })
   }
 
   return NextResponse.json({ success: true, folio })
