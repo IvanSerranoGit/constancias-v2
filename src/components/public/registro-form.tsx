@@ -108,14 +108,19 @@ export function RegistroForm({ cursoSlug, constanciaActiva }: Props) {
   return (
     <Card>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <Input
-          id="nombre"
-          label="Nombre completo"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-          placeholder="Como deseas que aparezca en tu constancia"
-          required
-        />
+        <div>
+          <Input
+            id="nombre"
+            label="Nombre completo"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            placeholder="Como deseas que aparezca en tu constancia"
+            required
+          />
+          <p className="text-xs text-amber-700 bg-amber-50 rounded-md px-3 py-2 mt-2">
+            Verifica que tu nombre esté escrito correctamente. Este aparecerá en tu constancia y no podrá ser modificado después.
+          </p>
+        </div>
 
         <Input
           id="email"
