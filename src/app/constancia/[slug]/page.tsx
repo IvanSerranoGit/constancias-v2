@@ -31,7 +31,7 @@ export default async function ConstanciaPage({ params }: Props) {
 
   if (!curso.constancia_activa) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center px-4 py-12">
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-amber-50 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <img src="/logo.png" alt="Logo" className="h-16 mx-auto mb-6" />
@@ -54,7 +54,7 @@ export default async function ConstanciaPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-amber-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <img src="/logo.png" alt="Logo" className="h-16 mx-auto mb-6" />

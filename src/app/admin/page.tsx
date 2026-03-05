@@ -46,7 +46,7 @@ export default async function AdminDashboardPage() {
           <h2 className="text-lg font-semibold text-gray-900">Cursos Recientes</h2>
           <Link
             href="/admin/cursos/nuevo"
-            className="text-sm font-medium text-blue-600 hover:text-blue-700"
+            className="text-sm font-medium text-brand-red hover:text-brand-red-dark"
           >
             + Crear nuevo curso
           </Link>
@@ -56,7 +56,7 @@ export default async function AdminDashboardPage() {
           <div className="space-y-3">
             {cursos.slice(0, 5).map((curso) => (
               <Link key={curso.id} href={`/admin/cursos/${curso.id}`}>
-                <Card className="hover:border-blue-200 hover:shadow transition-all cursor-pointer">
+                <Card className="hover:border-brand-gold/40 hover:shadow transition-all cursor-pointer">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-medium text-gray-900">{curso.nombre}</h3>
@@ -80,7 +80,7 @@ export default async function AdminDashboardPage() {
             <p className="text-gray-500">No hay cursos creados aún</p>
             <Link
               href="/admin/cursos/nuevo"
-              className="text-sm font-medium text-blue-600 hover:text-blue-700 mt-2 inline-block"
+              className="text-sm font-medium text-brand-red hover:text-brand-red-dark mt-2 inline-block"
             >
               Crear tu primer curso
             </Link>

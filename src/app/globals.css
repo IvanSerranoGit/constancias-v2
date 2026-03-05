@@ -2,6 +2,10 @@
 
 @theme inline {
   --font-sans: var(--font-inter);
+  --color-brand-red: #9e2349;
+  --color-brand-red-dark: #691b32;
+  --color-brand-gold: #cf9a46;
+  --color-brand-gold-light: #f5d778;
 }
 
 body {

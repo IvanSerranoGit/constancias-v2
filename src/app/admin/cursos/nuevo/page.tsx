@@ -114,7 +114,7 @@ export default function NuevoCursoPage() {
               type="file"
               accept="image/jpeg,image/png"
               onChange={handleFileChange}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-brand-gold/10 file:text-brand-gold hover:file:bg-brand-gold/20"
             />
             <p className="text-xs text-gray-400">JPG o PNG. Resolución recomendada: 3168x2448px (landscape)</p>
           </div>

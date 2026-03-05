@@ -15,7 +15,7 @@ export default async function HomePage() {
     .order('fecha', { ascending: false })) as { data: Curso[] | null }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-amber-50">
       <div className="max-w-3xl mx-auto px-4 py-16">
         {/* Header */}
         <div className="text-center mb-12">
@@ -31,7 +31,7 @@ export default async function HomePage() {
           <div className="space-y-4">
             {cursos.map((curso) => (
               <Link key={curso.id} href={`/constancia/${curso.slug}`}>
-                <Card className="hover:border-blue-200 hover:shadow-md transition-all cursor-pointer">
+                <Card className="hover:border-brand-gold/40 hover:shadow-md transition-all cursor-pointer">
                   <div className="flex items-center justify-between">
                     <div>
                       <h2 className="font-semibold text-gray-900 text-lg">{curso.nombre}</h2>

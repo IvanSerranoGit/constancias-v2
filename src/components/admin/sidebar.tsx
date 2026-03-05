@@ -22,10 +22,10 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 min-h-screen flex flex-col">
-      <div className="p-6 border-b border-gray-200">
-        <h2 className="text-lg font-bold text-gray-900">Constancias</h2>
-        <p className="text-xs text-gray-500 mt-0.5">Panel de administración</p>
+    <aside className="w-64 bg-brand-red-dark min-h-screen flex flex-col">
+      <div className="p-6 border-b border-white/10">
+        <h2 className="text-lg font-bold text-white">Constancias</h2>
+        <p className="text-xs text-white/60 mt-0.5">Panel de administración</p>
       </div>
 
       <nav className="flex-1 p-4 space-y-1">
@@ -41,8 +41,8 @@ export function Sidebar() {
               className={cn(
                 'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                 isActive
-                  ? 'bg-blue-50 text-blue-700'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'bg-white/15 text-brand-gold-light'
+                  : 'text-white/70 hover:bg-white/10 hover:text-white'
               )}
             >
               <item.icon className="w-5 h-5" />
@@ -52,10 +52,10 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-white/10">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2 w-full rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+          className="flex items-center gap-3 px-3 py-2 w-full rounded-lg text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white transition-colors"
         >
           <LogoutIcon className="w-5 h-5" />
           Cerrar sesión

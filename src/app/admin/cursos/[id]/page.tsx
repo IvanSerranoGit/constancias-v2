@@ -161,13 +161,13 @@ export default function CursoDetallePage() {
                 type="text"
                 value={editNombre}
                 onChange={(e) => setEditNombre(e.target.value)}
-                className="block w-full text-2xl font-bold text-gray-900 border border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="block w-full text-2xl font-bold text-gray-900 border border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-brand-red"
               />
               <input
                 type="date"
                 value={editFecha}
                 onChange={(e) => setEditFecha(e.target.value)}
-                className="block border border-gray-300 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="block border border-gray-300 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-brand-red"
               />
               <div className="flex gap-2">
                 <Button size="sm" onClick={handleSaveEdit} loading={saving}>Guardar</Button>
@@ -178,7 +178,7 @@ export default function CursoDetallePage() {
             <>
               <h1 className="text-2xl font-bold text-gray-900">{curso.nombre}</h1>
               <p className="text-gray-500 mt-1">{formatDate(curso.fecha)}</p>
-              <button onClick={startEditing} className="text-sm text-blue-600 hover:text-blue-700 mt-1">
+              <button onClick={startEditing} className="text-sm text-brand-red hover:text-brand-red-dark mt-1">
                 Editar datos del curso
               </button>
             </>
@@ -254,7 +254,7 @@ export default function CursoDetallePage() {
       <Card>
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-medium text-gray-900">Plantilla de constancia</h3>
-          <label className={`inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg cursor-pointer transition-colors ${uploading ? 'opacity-50 cursor-not-allowed' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'}`}>
+          <label className={`inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg cursor-pointer transition-colors ${uploading ? 'opacity-50 cursor-not-allowed' : 'bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20'}`}>
             {uploading ? 'Subiendo...' : curso.plantilla_url ? 'Cambiar imagen' : 'Subir imagen'}
             <input
               type="file"
@@ -289,7 +289,7 @@ export default function CursoDetallePage() {
             accept=".xlsx,.xls"
             onChange={handleImportExcel}
             disabled={importing}
-            className="block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
+            className="block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-brand-gold/10 file:text-brand-gold hover:file:bg-brand-gold/20 disabled:opacity-50"
           />
           {importing && <span className="text-sm text-gray-500">Importando...</span>}
         </div>
