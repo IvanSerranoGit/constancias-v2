@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
@@ -140,6 +141,16 @@ export function RegistroForm({ cursoSlug, constanciaActiva }: Props) {
           Registrar asistencia
         </Button>
       </form>
+
+      <p className="text-center text-sm text-gray-500 mt-4">
+        ¿Ya te registraste?{' '}
+        <Link
+          href={`/constancia/${cursoSlug}`}
+          className="text-brand-red hover:text-brand-red-dark font-medium underline underline-offset-2"
+        >
+          Descarga tu constancia aquí
+        </Link>
+      </p>
     </Card>
   )
 }
