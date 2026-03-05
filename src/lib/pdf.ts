@@ -48,8 +48,15 @@ export async function generarConstanciaPDF(
   // Configurar fuente para el nombre
   const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
   const nombre = participante.nombre.toUpperCase()
-  const fontSize = curso.nombre_font_size || 48
+  const baseFontSize = curso.nombre_font_size || 48
   const color = hexToRgb(curso.nombre_color || '#1a1a2e')
+
+  // Ajustar tamaño si el nombre es muy largo (máximo 85% del ancho de página)
+  const maxWidth = pageWidth * 0.85
+  let fontSize = baseFontSize
+  while (font.widthOfTextAtSize(nombre, fontSize) > maxWidth && fontSize > 16) {
+    fontSize -= 2
+  }
 
   // Calcular posición centrada
   const textWidth = font.widthOfTextAtSize(nombre, fontSize)
