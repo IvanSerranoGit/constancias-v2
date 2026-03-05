@@ -7,12 +7,14 @@ import { Card } from '@/components/ui/card'
 
 interface Props {
   cursoSlug: string
+  constanciaActiva: boolean
 }
 
-export function RegistroForm({ cursoSlug }: Props) {
+export function RegistroForm({ cursoSlug, constanciaActiva }: Props) {
   const [nombre, setNombre] = useState('')
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
+  const [downloading, setDownloading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
@@ -42,6 +44,38 @@ export function RegistroForm({ cursoSlug }: Props) {
     }
   }
 
+  async function handleDownload() {
+    setDownloading(true)
+    setError('')
+
+    try {
+      const res = await fetch('/api/constancia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, curso_slug: cursoSlug }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error)
+      }
+
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `constancia.pdf`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al descargar constancia')
+    } finally {
+      setDownloading(false)
+    }
+  }
+
   if (success) {
     return (
       <Card className="text-center">
@@ -51,9 +85,22 @@ export function RegistroForm({ cursoSlug }: Props) {
           </svg>
         </div>
         <h2 className="text-xl font-bold text-gray-900">Registro exitoso</h2>
-        <p className="text-gray-500 mt-2">
-          Tu asistencia ha sido registrada. Podrás descargar tu constancia cuando esté disponible.
-        </p>
+        <p className="text-gray-500 mt-2">Tu asistencia ha sido registrada.</p>
+
+        {constanciaActiva ? (
+          <div className="mt-6">
+            <Button onClick={handleDownload} loading={downloading} className="w-full">
+              Descargar Constancia
+            </Button>
+            {error && (
+              <p className="text-sm text-red-600 bg-red-50 rounded-lg p-3 mt-3">{error}</p>
+            )}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-400 mt-4">
+            Tu constancia estará disponible próximamente.
+          </p>
+        )}
       </Card>
     )
   }

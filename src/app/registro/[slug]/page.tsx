@@ -39,7 +39,7 @@ export default async function RegistroPage({ params }: Props) {
         </div>
 
         {curso.registro_activo ? (
-          <RegistroForm cursoSlug={curso.slug} />
+          <RegistroForm cursoSlug={curso.slug} constanciaActiva={curso.constancia_activa} />
         ) : (
           <RegistroCerrado />
         )}
