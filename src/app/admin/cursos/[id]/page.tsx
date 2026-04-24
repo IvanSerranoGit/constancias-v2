@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import * as XLSX from 'xlsx'
 import { createClient } from '@/lib/supabase/client'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -27,6 +28,16 @@ export default function CursoDetallePage() {
   const [editNombre, setEditNombre] = useState('')
   const [editFecha, setEditFecha] = useState('')
   const [saving, setSaving] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const PAGE_SIZE = 20
+  const filtered = participantes.filter((p) => {
+    const q = searchQuery.toLowerCase()
+    return p.nombre.toLowerCase().includes(q) || p.email.toLowerCase().includes(q) || p.folio.toLowerCase().includes(q)
+  })
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
   const fetchData = useCallback(async () => {
     const [cursoRes, partRes] = await Promise.all([
@@ -137,6 +148,19 @@ export default function CursoDetallePage() {
     navigator.clipboard.writeText(url)
     setCopiedLink(label)
     setTimeout(() => setCopiedLink(null), 2000)
+  }
+
+  function exportToExcel() {
+    const rows = participantes.map((p) => ({
+      Nombre: p.nombre,
+      Email: p.email,
+      Folio: p.folio,
+      'Fecha de registro': formatDate(p.created_at),
+    }))
+    const ws = XLSX.utils.json_to_sheet(rows)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Participantes')
+    XLSX.writeFile(wb, `participantes-${curso?.slug ?? id}.xlsx`)
   }
 
   if (loading) {
@@ -302,47 +326,108 @@ export default function CursoDetallePage() {
 
       {/* Participantes table */}
       <Card padding={false}>
-        <div className="p-6 pb-0">
-          <h3 className="font-medium text-gray-900">Participantes</h3>
+        <div className="p-6 pb-4 flex flex-col sm:flex-row sm:items-center gap-3">
+          <h3 className="font-medium text-gray-900 shrink-0">Participantes</h3>
+          <input
+            type="text"
+            placeholder="Buscar por nombre, email o folio..."
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1) }}
+            className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-red placeholder:text-gray-400"
+          />
+          {participantes.length > 0 && (
+            <Button size="sm" variant="secondary" onClick={exportToExcel}>
+              Exportar Excel
+            </Button>
+          )}
         </div>
-        {participantes.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Nombre</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Email</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Folio</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Fecha</th>
-                  <th className="px-6 py-3"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {participantes.map((p) => (
-                  <tr key={p.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-3 font-medium text-gray-900">{p.nombre}</td>
-                    <td className="px-6 py-3 text-gray-500">{p.email}</td>
-                    <td className="px-6 py-3">
-                      <Badge>{p.folio}</Badge>
-                    </td>
-                    <td className="px-6 py-3 text-gray-500">{formatDate(p.created_at)}</td>
-                    <td className="px-6 py-3 text-right">
-                      <button
-                        onClick={() => handleDeleteParticipante(p.id)}
-                        className="text-red-500 hover:text-red-700 text-xs"
-                      >
-                        Eliminar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
+
+        {participantes.length === 0 ? (
           <div className="p-12 text-center text-gray-500">
             No hay participantes registrados aún
           </div>
+        ) : filtered.length === 0 ? (
+          <div className="p-12 text-center text-gray-500">
+            No se encontraron resultados para &quot;{searchQuery}&quot;
+          </div>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Nombre</th>
+                    <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Email</th>
+                    <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Folio</th>
+                    <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Fecha</th>
+                    <th className="px-6 py-3"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {paginated.map((p) => (
+                    <tr key={p.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-3 font-medium text-gray-900">{p.nombre}</td>
+                      <td className="px-6 py-3 text-gray-500">{p.email}</td>
+                      <td className="px-6 py-3">
+                        <Badge>{p.folio}</Badge>
+                      </td>
+                      <td className="px-6 py-3 text-gray-500">{formatDate(p.created_at)}</td>
+                      <td className="px-6 py-3 text-right">
+                        <button
+                          onClick={() => handleDeleteParticipante(p.id)}
+                          className="text-red-500 hover:text-red-700 text-xs"
+                        >
+                          Eliminar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Paginación */}
+            <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between text-sm text-gray-500">
+              <span>
+                {filtered.length === participantes.length
+                  ? `${participantes.length} participantes`
+                  : `${filtered.length} de ${participantes.length} participantes`}
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                  className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  «
+                </button>
+                <button
+                  onClick={() => setCurrentPage((p) => p - 1)}
+                  disabled={currentPage === 1}
+                  className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  ‹
+                </button>
+                <span className="px-3 py-1">
+                  Página {currentPage} de {totalPages}
+                </span>
+                <button
+                  onClick={() => setCurrentPage((p) => p + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  ›
+                </button>
+                <button
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  »
+                </button>
+              </div>
+            </div>
+          </>
         )}
       </Card>
     </div>
