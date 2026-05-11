@@ -15,9 +15,12 @@ export interface Curso {
 export interface Participante {
   id: string
   nombre: string
-  email: string
+  email: string | null
   curso_id: string
   folio: string
+  hoja: string | null
+  libro: string | null
+  folio_oficial: string | null
   created_at: string
 }
 

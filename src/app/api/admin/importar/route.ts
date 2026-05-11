@@ -14,7 +14,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Archivo y curso_id son requeridos' }, { status: 400 })
   }
 
-  // Obtener slug del curso
   const { data: curso } = await supabase
     .from('cursos')
     .select('slug')
@@ -25,28 +24,31 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Curso no encontrado' }, { status: 404 })
   }
 
-  // Parsear Excel
   const buffer = await file.arrayBuffer()
   const rows = parseExcel(buffer)
 
   if (rows.length === 0) {
     return NextResponse.json(
-      { error: 'No se encontraron datos válidos. Asegúrate de que el archivo tenga columnas de nombre y correo.' },
+      { error: 'No se encontraron datos válidos. Asegúrate de que el archivo tenga al menos una columna de nombre.' },
       { status: 400 }
     )
   }
 
   let imported = 0
   let duplicates = 0
+  const errorSamples: string[] = []
 
   for (const row of rows) {
-    // Verificar duplicado
-    const { data: existente } = await supabase
-      .from('participantes')
-      .select('id')
-      .eq('email', row.email)
-      .eq('curso_id', cursoId)
-      .single()
+    // Detectar duplicado: por email si está; si no, por folio_oficial; si tampoco, por nombre
+    let dupQuery = supabase.from('participantes').select('id').eq('curso_id', cursoId)
+    if (row.email) {
+      dupQuery = dupQuery.eq('email', row.email)
+    } else if (row.folio_oficial) {
+      dupQuery = dupQuery.eq('folio_oficial', row.folio_oficial)
+    } else {
+      dupQuery = dupQuery.eq('nombre', row.nombre)
+    }
+    const { data: existente } = await dupQuery.maybeSingle()
 
     if (existente) {
       duplicates++
@@ -60,10 +62,29 @@ export async function POST(request: NextRequest) {
       email: row.email,
       curso_id: cursoId,
       folio,
+      hoja: row.hoja,
+      libro: row.libro,
+      folio_oficial: row.folio_oficial,
     })
 
-    if (!error) imported++
+    if (error) {
+      if (errorSamples.length < 3) errorSamples.push(`${row.nombre}: ${error.message}`)
+    } else {
+      imported++
+    }
   }
 
-  return NextResponse.json({ imported, duplicates, total: rows.length })
+  if (imported === 0 && errorSamples.length > 0) {
+    return NextResponse.json(
+      { error: `No se importó ninguna fila. Ejemplo: ${errorSamples[0]}` },
+      { status: 500 }
+    )
+  }
+
+  return NextResponse.json({
+    imported,
+    duplicates,
+    total: rows.length,
+    errors: errorSamples,
+  })
 }

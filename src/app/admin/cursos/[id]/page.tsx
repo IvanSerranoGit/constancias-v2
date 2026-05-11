@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Toggle } from '@/components/ui/toggle'
 import { formatDate } from '@/lib/utils'
+import { generarConstanciasMasivasPDF } from '@/lib/pdf'
 import type { Curso, Participante } from '@/types'
 
 export default function CursoDetallePage() {
@@ -30,11 +31,17 @@ export default function CursoDetallePage() {
   const [saving, setSaving] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  const [generatingMasivo, setGeneratingMasivo] = useState(false)
 
   const PAGE_SIZE = 20
   const filtered = participantes.filter((p) => {
     const q = searchQuery.toLowerCase()
-    return p.nombre.toLowerCase().includes(q) || p.email.toLowerCase().includes(q) || p.folio.toLowerCase().includes(q)
+    return (
+      p.nombre.toLowerCase().includes(q) ||
+      (p.email?.toLowerCase().includes(q) ?? false) ||
+      p.folio.toLowerCase().includes(q) ||
+      (p.folio_oficial?.toLowerCase().includes(q) ?? false)
+    )
   })
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
@@ -150,11 +157,39 @@ export default function CursoDetallePage() {
     setTimeout(() => setCopiedLink(null), 2000)
   }
 
+  async function handleGenerarMasivo() {
+    if (!curso || participantes.length === 0) return
+    if (!curso.plantilla_url) {
+      alert('El curso no tiene plantilla configurada. Sube una antes de generar constancias.')
+      return
+    }
+    setGeneratingMasivo(true)
+    try {
+      const bytes = await generarConstanciasMasivasPDF(participantes, curso)
+      const blob = new Blob([bytes as BlobPart], { type: 'application/pdf' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `constancias-${curso.slug}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Error al generar constancias')
+    } finally {
+      setGeneratingMasivo(false)
+    }
+  }
+
   function exportToExcel() {
     const rows = participantes.map((p) => ({
       Nombre: p.nombre,
-      Email: p.email,
+      Email: p.email ?? '',
       Folio: p.folio,
+      Hoja: p.hoja ?? '',
+      Libro: p.libro ?? '',
+      'Folio oficial': p.folio_oficial ?? '',
       'Fecha de registro': formatDate(p.created_at),
     }))
     const ws = XLSX.utils.json_to_sheet(rows)
@@ -305,7 +340,7 @@ export default function CursoDetallePage() {
       <Card>
         <h3 className="font-medium text-gray-900 mb-1">Importar participantes desde Excel</h3>
         <p className="text-sm text-gray-500 mb-4">
-          El archivo debe tener columnas de nombre y correo electrónico
+          Debe tener al menos columna de nombre. Opcionales: correo, hoja, libro, folio
         </p>
         <div className="flex items-center gap-4">
           <input
@@ -336,9 +371,20 @@ export default function CursoDetallePage() {
             className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-red placeholder:text-gray-400"
           />
           {participantes.length > 0 && (
-            <Button size="sm" variant="secondary" onClick={exportToExcel}>
-              Exportar Excel
-            </Button>
+            <>
+              <Button size="sm" variant="secondary" onClick={exportToExcel}>
+                Exportar Excel
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleGenerarMasivo}
+                loading={generatingMasivo}
+                disabled={!curso.plantilla_url}
+                title={!curso.plantilla_url ? 'Sube una plantilla primero' : ''}
+              >
+                Generar constancias (PDF)
+              </Button>
+            </>
           )}
         </div>
 
@@ -367,7 +413,7 @@ export default function CursoDetallePage() {
                   {paginated.map((p) => (
                     <tr key={p.id} className="hover:bg-gray-50">
                       <td className="px-6 py-3 font-medium text-gray-900">{p.nombre}</td>
-                      <td className="px-6 py-3 text-gray-500">{p.email}</td>
+                      <td className="px-6 py-3 text-gray-500">{p.email ?? <span className="text-gray-300">—</span>}</td>
                       <td className="px-6 py-3">
                         <Badge>{p.folio}</Badge>
                       </td>
