@@ -1,7 +1,15 @@
 @import "tailwindcss";
 
+/* Las fuentes deben seguir como `inline` porque --font-inter lo define
+   next/font en un className, no en :root. */
 @theme inline {
   --font-sans: var(--font-inter);
+}
+
+/* Colores de marca SIN `inline`: así las utilidades (bg-brand-red, etc.)
+   referencian var(--color-brand-red) y pueden sobreescribirse en runtime.
+   Estos valores son los defaults; el override por env se inyecta en layout.tsx. */
+@theme {
   --color-brand-red: #9e2349;
   --color-brand-red-dark: #691b32;
   --color-brand-gold: #cf9a46;

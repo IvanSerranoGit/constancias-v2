@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { ORG_NAME } from '@/lib/config'
 import { cn } from '@/lib/utils'
 
 const nav = [
@@ -24,7 +25,7 @@ export function Sidebar() {
   return (
     <aside className="w-64 bg-brand-red-dark min-h-screen flex flex-col">
       <div className="p-6 border-b border-white/10">
-        <h2 className="text-lg font-bold text-white">Constancias</h2>
+        <h2 className="text-lg font-bold text-white">{ORG_NAME}</h2>
         <p className="text-xs text-white/60 mt-0.5">Panel de administración</p>
       </div>
 
