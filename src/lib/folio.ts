@@ -4,11 +4,16 @@ export async function generarFolio(cursoSlug: string, cursoId: string): Promise<
   const supabase = createServiceClient()
   const year = new Date().getFullYear()
 
-  const prefijo = cursoSlug
-    .split('-')
-    .map((p) => p[0]?.toUpperCase() ?? '')
-    .join('')
-    .slice(0, 4)
+  // Prefijo derivado del slug del curso (ej: "fesp" → "FESP"). Si el slug no
+  // produce letras, se usa el fallback institucional de la variable de entorno.
+  const prefijo =
+    cursoSlug
+      .split('-')
+      .map((p) => p[0]?.toUpperCase() ?? '')
+      .join('')
+      .slice(0, 4) ||
+    process.env.NEXT_PUBLIC_FOLIO_PREFIX_FALLBACK ||
+    'CERT'
 
   const patron = `${prefijo}-${year}-%`
 

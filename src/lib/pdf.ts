@@ -49,7 +49,7 @@ function dibujarPagina(
 
   const nombre = sanitizarTextoPdf(participante.nombre.toUpperCase())
   const baseFontSize = curso.nombre_font_size || 48
-  const color = hexToRgb(curso.nombre_color || '#1a1a2e')
+  const color = hexToRgb(curso.nombre_color || process.env.PDF_NAME_COLOR || '#1a1a2e')
 
   // Ajustar tamaño si el nombre es muy largo (máximo 85% del ancho de página)
   const maxWidth = pageWidth * 0.85

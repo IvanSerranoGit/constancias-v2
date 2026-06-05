@@ -3,6 +3,7 @@ import { createServiceClient } from '@/lib/supabase/server'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { formatDate } from '@/lib/utils'
+import { LOGO_URL } from '@/lib/config'
 import type { Curso } from '@/types'
 
 export default async function HomePage() {
@@ -19,7 +20,7 @@ export default async function HomePage() {
       <div className="max-w-3xl mx-auto px-4 py-16">
         {/* Header */}
         <div className="text-center mb-12">
-          <img src="/logo.png" alt="Logo" className="h-20 mx-auto mb-8" />
+          <img src={LOGO_URL} alt="Logo" className="h-20 mx-auto mb-8" />
           <h1 className="text-3xl font-bold text-gray-900">Constancias de Participación</h1>
           <p className="text-gray-500 mt-3 text-lg">
             Descarga tus constancias de los webinarios en los que participaste
